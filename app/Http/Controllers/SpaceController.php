@@ -7,6 +7,12 @@ use App\Models\Space;
 
 class SpaceController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +21,10 @@ class SpaceController extends Controller
     public function index()
     {
         //
-        return view('pages.space.index');
+        $spaces = Space::orderBy('created_at','desc')->paginate(4);
+        // return response()->json([$spaces]);
+
+        return view('pages.space.index', compact('spaces'));
     }
 
     /**
@@ -47,7 +56,7 @@ class SpaceController extends Controller
         ]);
 
         $request->user()->spaces()->create($request->all());
-        
+
         return redirect()->route('space.index')->with('status', 'Space created!');
     }
 

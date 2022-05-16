@@ -18,4 +18,23 @@ class Space extends Model
     {
         return $this->hasMany(SpacePhoto::class, 'space_id', 'id');
     }
+
+    public function getSpaces($latitude, $longtitude, $radius){
+        // Jarak Mil = 3959
+        // Jara Km = 6371
+        return $this->select('spaces.*')
+            ->selectRaw(
+                '( 6371 * 
+                    acos( cos( radians(?) ) *
+                        cos( radians( latitude ) ) *
+                        cos( radians( longitude ) - radians(?)) +
+                        sin( radians(?) ) *
+                        sin( radians( latitude ) )
+                    )
+                ) AS distance', [$latitude, $longtitude, $latitude]
+        )
+        ->havingRaw("distance < ?", [$radius])
+        ->orderBy('distance','asc');
+
+    }
 }
