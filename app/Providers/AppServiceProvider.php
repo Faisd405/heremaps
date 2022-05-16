@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,6 +17,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         //
+        Schema::defaultStringLength(191);
     }
 
     /**
@@ -24,5 +28,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //
+        // $this->app['register']->server->set['HTTPS', 'on'];
+        // URL::forceScheme('https');
+
     }
 }
