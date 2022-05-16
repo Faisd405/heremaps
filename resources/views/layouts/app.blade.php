@@ -98,7 +98,7 @@
     <script src="{{ asset('js/app.js') }}"></script>
     @stack('scripts')
     <script>
-        window.hereApiKey = "{{ env('HERE_API_KEY') }}";
+        window.hereApiKey = "{{ env('HERE_API_KEY') }}"
     </script>
     <script src="{{ asset('js/here.js') }}"></script>
 </body>
