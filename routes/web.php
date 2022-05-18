@@ -22,10 +22,5 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/space', [SpaceController::class, 'index'])->name('space.index');
-Route::get('/space/create', [SpaceController::class, 'create'])->name('space.create');
-Route::post('/space', [SpaceController::class, 'store'])->name('space.store');
-Route::get('/space/{space}', [SpaceController::class, 'show'])->name('space.show');
-Route::get('/space/{space}/edit', [SpaceController::class, 'edit'])->name('space.edit');
-Route::put('/space/{space}', [SpaceController::class, 'update'])->name('space.update');
-Route::delete('/space/{space}', [SpaceController::class, 'destroy'])->name('space.destroy');
+Route::get('/browse/space', [SpaceController::class, 'browse'])->name('space.browse');
+Route::resource('/space', SpaceController::class);

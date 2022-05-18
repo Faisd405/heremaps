@@ -87,14 +87,57 @@ if (navigator.geolocation) {
           inputLng.value = resultCoord.lng.toFixed(5);
         }
       }, false);
-
-
-
     }
 
     if (window.action == "submit") {
       addDraggableMarker(map, behavior)
     }
+
+    // Browse Location codespace
+    let spaces = [];
+    const fetchSpaces = function (latitude, longitude, radius) {
+      return new Promise((resolve, reject) => {
+        resolve(
+          fetch(`/api/spaces?lat=${latitude}&lng=${longitude}&rad=${radius}`)
+            .then((res) => res.json())
+            .then(function (data) {
+              data.forEach(function (value, index) {
+                let marker = new H.map.Marker({
+                  lat: value.latitude,
+                  lng: value.longitude
+                });
+                spaces.push(marker);
+              })
+            })
+        )
+      })
+    }
+
+    function clearSpace() {
+      map.removeObjects(spaces);
+      spaces = [];
+    }
+
+    function init(latitude, langitude, radius) {
+      clearSpace();
+      fetchSpaces(latitude, langitude, radius)
+        .then(function () {
+          map.addObjects(spaces);
+        })
+    }
+
+    if (window.action = "browse") {
+      map.addEventListener('dragend', function (ev) {
+        let resultCoord = map.screenToGeo(
+          ev.currentPointer.viewportX,
+          ev.currentPointer.viewportY,
+        );
+        init(resultCoord.lat, resultCoord.lng, 40);
+      }, false)
+
+      init(objLocalCoord.lat, objLocalCoord.lng, 40);
+    }
+
   })
 } else {
   console.log('Geolocation is not supported by this browser.');
