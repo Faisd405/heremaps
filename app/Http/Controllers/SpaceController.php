@@ -21,7 +21,7 @@ class SpaceController extends Controller
     public function index()
     {
         //
-        $spaces = Space::orderBy('created_at','desc')->paginate(4);
+        $spaces = Space::orderBy('created_at', 'desc')->paginate(4);
         // return response()->json([$spaces]);
 
         return view('pages.space.index', compact('spaces'));
@@ -72,10 +72,10 @@ class SpaceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        //
-
+        $space = Space::findOrFail($id);
+        return view('pages.space.show', compact('space'));
     }
 
 
@@ -88,6 +88,11 @@ class SpaceController extends Controller
     public function edit($id)
     {
         //
+        $space = Space::findOrFail($id);
+        if ($space->user_id != auth()->user()->id) {
+            return redirect()->route('space.index')->with('status', 'You are not authorized to edit this space!');
+        }
+        return view('pages.space.edit', compact('space'));
     }
 
     /**
@@ -100,6 +105,21 @@ class SpaceController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $space = Space::findOrFail($id);
+        if ($space->user_id != auth()->user()->id) {
+            return redirect()->route('space.index')->with('status', 'You are not authorized to update this space!');
+        }
+        
+        $this->validate($request, [
+            'title' => ['required', 'min:3'],
+            'address' => ['required', 'min:5'],
+            'description' => ['required', 'min:10'],
+            'latitude' => ['required'],
+            'longitude' => ['required'],
+        ]);
+
+        $space->update($request->all());
+        return redirect()->route('space.index')->with('status', 'Space updated!');
     }
 
     /**
@@ -111,5 +131,12 @@ class SpaceController extends Controller
     public function destroy($id)
     {
         //
+        $space = Space::findOrFail($id);
+        if ($space->user_id != auth()->user()->id) {
+            return redirect()->route('space.index')->with('status', 'You are not authorized to delete this space!');
+        }
+
+        $space->delete();
+        return redirect()->route('space.index')->with('status', 'Space deleted!');
     }
 }
